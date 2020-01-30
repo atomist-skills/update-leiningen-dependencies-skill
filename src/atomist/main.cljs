@@ -53,14 +53,14 @@
       (go (>! (:done-channel request) :done)))))
 
 (defn- handle-push-event [request]
-  ((-> (api/finished "handling Push")
+  ((-> (api/finished :message "handling Push")
        (api/send-fingerprints)
        (api/run-sdm-project-callback compute-leiningen-fingerprints)
        (api/extract-github-token)
        (api/create-ref-from-push-event)) request))
 
 (defn- handle-impact-event [request]
-  ((-> (api/finished "handling CommitFingerprintImpact")
+  ((-> (api/finished :message "handling CommitFingerprintImpact")
        (api/run-sdm-project-callback
         (sdm/commit-then-PR
          (fn [p] (leiningen/apply-leiningen-dependency p (-> request :data :CommitFingerprintImpact :offTarget)))
@@ -75,7 +75,7 @@
        (check-for-targets-to-apply)) request))
 
 (defn command-handler [request]
-  ((-> (api/finished "handling CommandHandler")
+  ((-> (api/finished :message "handling CommandHandler")
        (show-fingerprints-in-slack)
        (api/run-sdm-project-callback compute-leiningen-fingerprints)
        (api/create-ref-from-first-linked-repo)
