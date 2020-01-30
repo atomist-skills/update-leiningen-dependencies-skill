@@ -6,11 +6,11 @@
 
 (defn apply-leiningen-dependency [project offTargets]
   (let [f (io/file (. project -basedir) "project.clj")]
-    (if (fs/fexists? f)
+    (if (fs/fexists? (.getPath f))
       (doseq [fingerprint offTargets]
         (io/spit f (atomist.lein/edit-library (io/slurp f) (-> fingerprint :data (nth 0)) (-> fingerprint :data (nth 1))))))))
 (defn extract [project]
   (let [f (io/file (. project -baseDir) "project.clj")]
-    (if (fs/fexists? f)
+    (if (fs/fexists? (.getPath f))
       (atomist.lein/deps f)
       [])))
