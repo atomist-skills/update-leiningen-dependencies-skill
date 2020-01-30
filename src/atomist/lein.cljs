@@ -1,14 +1,10 @@
 (ns atomist.lein
   (:require [rewrite-clj.zip :as z]
-            [http.util :as util]
             [cljs-node-io.core :as io :refer [slurp spit]]
             [cljs-node-io.file :as file]
-            [goog.crypt.Sha256 :as Sha256]
             [goog.crypt :as crypt]
             [cljs.pprint :refer [pprint]]
-            [atomist.cljs-log :as log]
             [cljs.reader :refer [read-string]]
-            [cljs.spec.alpha :as spec]
             [goog.string :as gstring]
             [goog.string.format]))
 

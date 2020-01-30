@@ -25,15 +25,26 @@
    Our data structure has {:keys [group artifact version name version scope]}"
   [project]
   (go
-   (let [fingerprints (leiningen/extract project)]
-     (->> (for [x fingerprints]
-            (assoc x
-              :sha (sha/sha-256 (json/->str (:data x)))
-              :value (json/->str (:value x))
-              :displayName (:name x)
-              :displayValue (nth (:data x) 1)
-              :displayType "Lein dependencies"))
-          (into [])))))
+   (try
+     (let [fingerprints (leiningen/extract project)]
+       (->> (for [x fingerprints]
+              (assoc x
+                :sha (sha/sha-256 (json/->str (:data x)))
+                :value (json/->str (:value x))
+                :displayName (:name x)
+                :displayValue (nth (:data x) 1)
+                :displayType "Lein dependencies"))
+            (into [])))
+     (catch :default ex
+       (log/error ex)
+       [{:failure "unable to extract"
+         :message (str ex)}]))))
+
+(defn show-fingerprints-in-slack [handler]
+  (fn [request]
+    (if-let [fingerprints (:results request)]
+      (api/snippet-message request (json/->str fingerprints) "application/json" "fingerprints")
+      (api/simple-message request "no fingerprints"))))
 
 (defn check-for-targets-to-apply [handler]
   (fn [request]
@@ -42,18 +53,14 @@
       (go (>! (:done-channel request) :done)))))
 
 (defn- handle-push-event [request]
-  ((-> (fn [ch-request]
-         (log/info "----> finished handling Push")
-         (go (>! (:done-channel ch-request) :done)))
+  ((-> (api/finished "handling Push")
        (api/send-fingerprints)
        (api/run-sdm-project-callback compute-leiningen-fingerprints)
        (api/extract-github-token)
        (api/create-ref-from-push-event)) request))
 
 (defn- handle-impact-event [request]
-  ((-> (fn [ch-request]
-         (log/info "----> finished handling CommitFingerprintImpact")
-         (go (>! (:done-channel ch-request) :done)))
+  ((-> (api/finished "handling CommitFingerprintImpact")
        (api/run-sdm-project-callback
         (sdm/commit-then-PR
          (fn [p] (leiningen/apply-leiningen-dependency p (-> request :data :CommitFingerprintImpact :offTarget)))
@@ -66,6 +73,15 @@
         (-> request :data :CommitFingerprintImpact :repo)
         (-> request :data :CommitFingerprintImpact :branch))
        (check-for-targets-to-apply)) request))
+
+(defn command-handler [request]
+  ((-> (api/finished "handling CommandHandler")
+       (show-fingerprints-in-slack)
+       (api/run-sdm-project-callback compute-leiningen-fingerprints)
+       (api/create-ref-from-first-linked-repo)
+       (api/extract-linked-repos)
+       (api/extract-github-user-token)
+       (api/set-message-id)) (assoc request :branch "master")))
 
 (defn ^:export handler
   "handler
@@ -84,4 +100,7 @@
        (handle-push-event request)
        ;; handle Commit Fingeprint Impact events
        (= :CommitFingerprintImpact (:data request))
-       (handle-impact-event request)))))
+       (handle-impact-event request)
+
+       (= "UpdateLeiningenDependencies" (:command request))
+       (command-handler request)))))
