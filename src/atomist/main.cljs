@@ -48,9 +48,11 @@
 
 (defn check-for-targets-to-apply [handler]
   (fn [request]
-    (if (not (empty? (-> request :data :CommitFingerprintImpact :offTarget)))
-      (handler request)
-      (go (>! (:done-channel request) :done)))))
+    (if (and
+         (empty? (-> request :data :CommitFingerprintImpact :offTarget))
+         (empty? (:configurations request)))
+      (api/finish request)
+      (handler request))))
 
 (defn- handle-push-event [request]
   ((-> (api/finished :message "handling Push")
@@ -63,16 +65,17 @@
   ((-> (api/finished :message "handling CommitFingerprintImpact")
        (api/run-sdm-project-callback
         (sdm/commit-then-PR
-         (fn [p] (leiningen/apply-leiningen-dependency p (-> request :data :CommitFingerprintImpact :offTarget)))
+         (fn [p] (leiningen/apply-leiningen-dependency (assoc request :project p)))
          {:branch (str (random-uuid))
           :target-branch "master"
-          :body "apply maven target dependencies"
-          :title "apply maven target dependencies"}))
+          :body "apply leiningen target dependencies"
+          :title "apply leiningen target dependencies"}))
        (api/extract-github-token)
        (api/create-ref-from-repo
         (-> request :data :CommitFingerprintImpact :repo)
         (-> request :data :CommitFingerprintImpact :branch))
-       (check-for-targets-to-apply)) request))
+       (check-for-targets-to-apply)
+       (api/add-skill-configs)) request))
 
 (defn command-handler [request]
   ((-> (api/finished :message "handling CommandHandler")
@@ -96,10 +99,10 @@
    (fn [request]
      (cond
        ;; handle Push events
-       (= :Push (:data request))
+       (contains? (:data request) :Push)
        (handle-push-event request)
        ;; handle Commit Fingeprint Impact events
-       (= :CommitFingerprintImpact (:data request))
+       (contains? (:data request) :CommitFingerprintImpact)
        (handle-impact-event request)
 
        (= "UpdateLeiningenDependencies" (:command request))

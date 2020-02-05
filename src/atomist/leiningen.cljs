@@ -4,11 +4,16 @@
             [cljs-node-io.fs :as fs]
             [atomist.cljs-log :as log]))
 
-(defn apply-leiningen-dependency [project offTargets]
+(defn apply-leiningen-dependency [{:keys [project data configurations]}]
+  (log/info "configurations " configurations)
   (let [f (io/file (. project -basedir) "project.clj")]
     (if (fs/fexists? (.getPath f))
-      (doseq [fingerprint offTargets]
-        (io/spit f (atomist.lein/edit-library (io/slurp f) (-> fingerprint :data (nth 0)) (-> fingerprint :data (nth 1))))))))
+      (doseq [{:keys [type name data] :as fingerprint} (-> data :CommitFingerprintImpact :offTarget)]
+        (log/infof "offTarget %s %s %s" type name (str data))
+        (if (= type "clojure-project-deps")
+          (log/infof "clojure-project-deps %s %s" (nth data 0) (nth data 1))
+          #_(io/spit f (atomist.lein/edit-library (io/slurp f) (-> data (nth 0)) (-> data (nth 1)))))))))
+
 (defn extract [project]
   (let [f (io/file (. project -baseDir) "project.clj")]
     (if (fs/fexists? (.getPath f))

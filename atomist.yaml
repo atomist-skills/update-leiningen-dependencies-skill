@@ -17,7 +17,7 @@
 skill:
   name: "atomist/update-leiningen-dependencies"
   title: Update Leiningen Dependencies
-  version: "0.1.2"
+  version: "0.1.3"
   author: Atomist
   description: Automatically update dependencies based on your own policy
   long_description: |
@@ -29,6 +29,7 @@ skill:
   homepage: https://github.com/atomist-skills/update-leiningen-dependencies
   repository: https://github.com/atomist-skills/update-leiningen-dependencies
   icon: https://leiningen.org/img/leiningen.jpg
+  dispatch: multiple
 
   package:
     use: 'atomist/package-cljs-skill'
@@ -42,4 +43,21 @@ skill:
 commands:
 - name: UpdateLeiningenDependencies
   description: "summary of the leiningen dependencies"
-  pattern: "^update-leiningen-dependencies.*$"
+   pattern: "^update-leiningen-dependencies.*$"
+
+parameters:
+  - string:
+      description: "Leiningen libraries are, by convention, symbols with or without namespaces."
+      displayName: "Leiningen Library name"
+      name: "name"
+      required: true
+  - string:
+      description: "Leiningen library versions are typically semver compliant strings"
+      displayName: "Leiningen Library version"
+      name: "version"
+      required: true
+  - repoFilters:
+      description: "The set of Repositories for this String Replace rule."
+      displayName: "Repository Scope"
+      name: "scope"
+      required: false

@@ -1,0 +1,60 @@
+subscription onFingerprintImpact {
+    CommitFingerprintImpact {
+        commit {
+            sha
+        }
+        branch {
+            name
+            id
+        }
+        offTarget {
+            type
+            name
+            data
+            displayName
+            displayType
+        }
+        repo {
+            name
+            org {
+                owner
+                scmProvider {
+                    credential {
+                        secret
+                    }
+                    id
+                    name
+                    providerId
+                    providerType
+                }
+                team {
+                    id
+                    name
+                    chatTeams {
+                        id name
+                    }
+                }
+            }
+        }
+        diffs {
+            from {
+                data
+                displayName
+                displayType
+                displayValue
+                id
+                sha
+                type
+            }
+            to {
+                data
+                displayName
+                displayType
+                displayValue
+                id
+                sha
+                type
+            }
+        }
+    }
+}
