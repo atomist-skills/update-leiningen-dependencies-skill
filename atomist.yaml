@@ -43,7 +43,7 @@ skill:
 commands:
 - name: UpdateLeiningenDependencies
   description: "summary of the leiningen dependencies"
-   pattern: "^update-leiningen-dependencies.*$"
+  pattern: "^update-leiningen-dependencies.*$"
 
 parameters:
   - string:
