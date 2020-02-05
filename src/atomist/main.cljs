@@ -12,7 +12,8 @@
             [atomist.api :as api]
             [atomist.promise :as promise]
             [atomist.leiningen :as leiningen]
-            [atomist.sha :as sha])
+            [atomist.sha :as sha]
+            [cljs-node-io.core :as io])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn compute-leiningen-fingerprints
@@ -27,6 +28,7 @@
   (go
    (try
      (let [fingerprints (leiningen/extract project)]
+       (log/info (str fingerprints))
        (->> (for [x fingerprints]
               (assoc x
                 :sha (sha/sha-256 (json/->str (:data x)))
@@ -37,14 +39,17 @@
             (into [])))
      (catch :default ex
        (log/error ex)
+       ;; TODO
+       (log/info (io/slurp (io/file (. project -baseDir) "project.clj")))
        [{:failure "unable to extract"
          :message (str ex)}]))))
 
 (defn show-fingerprints-in-slack [handler]
   (fn [request]
-    (if-let [fingerprints (:results request)]
-      (api/snippet-message request (json/->str fingerprints) "application/json" "fingerprints")
-      (api/simple-message request "no fingerprints"))))
+    (go
+     (if-let [fingerprints (:results request)]
+       (<! (api/snippet-message request (json/->str fingerprints) "application/json" "fingerprints"))
+       (<! (api/simple-message request "no fingerprints"))))))
 
 (defn check-for-targets-to-apply [handler]
   (fn [request]

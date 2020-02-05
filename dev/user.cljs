@@ -1,6 +1,9 @@
 (ns user
   (:require [atomist.main]
-            [atomist.cljs-log :as log]))
+            [atomist.cljs-log :as log]
+            [cljs.core.async :refer [<!]]
+            [atomist.sdmprojectmodel :as sdm])
+  (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (enable-console-print!)
 
@@ -61,4 +64,8 @@
                             :configurations []
                             :extensions [:team_id "AK748NQC5"]}
                        (fn [& args] (log/info "sendreponse " args)))
- )
+ (go
+  (cljs.pprint/pprint (<! (sdm/do-with-shallow-cloned-project
+                           (fn [p] (atomist.main/compute-leiningen-fingerprints p))
+                           github-token
+                           {:owner "atomisthqa" :repo "clj1" :branch "master"})))))
