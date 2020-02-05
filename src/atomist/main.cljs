@@ -27,6 +27,7 @@
   [project]
   (go
    (try
+     (log/info "project " (. project -baseDir))
      (let [fingerprints (leiningen/extract project)]
        (log/info (str fingerprints))
        (->> (for [x fingerprints]
@@ -39,17 +40,17 @@
             (into [])))
      (catch :default ex
        (log/error ex)
-       ;; TODO
-       (log/info (io/slurp (io/file (. project -baseDir) "project.clj")))
        [{:failure "unable to extract"
          :message (str ex)}]))))
 
 (defn show-fingerprints-in-slack [handler]
   (fn [request]
     (go
+     (log/info "size of fingperprint results %s" (count (:results request)))
      (if-let [fingerprints (:results request)]
        (<! (api/snippet-message request (json/->str fingerprints) "application/json" "fingerprints"))
-       (<! (api/simple-message request "no fingerprints"))))))
+       (<! (api/simple-message request "no fingerprints")))
+     (handler request))))
 
 (defn check-for-targets-to-apply [handler]
   (fn [request]
@@ -79,8 +80,7 @@
        (api/create-ref-from-repo
         (-> request :data :CommitFingerprintImpact :repo)
         (-> request :data :CommitFingerprintImpact :branch))
-       (check-for-targets-to-apply)
-       (api/add-skill-configs)) request))
+       (check-for-targets-to-apply)) request))
 
 (defn command-handler [request]
   ((-> (api/finished :message "handling CommandHandler")
