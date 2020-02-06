@@ -28,7 +28,7 @@
   [project]
   (go
    (try
-     (log/info "project \"" (. project -baseDir) "\".")
+     (log/info "project \"" (. ^js project -baseDir) "\".")
      (log/info "keys:  " (.keys js/Object project))
      (let [fingerprints (leiningen/extract project)]
        (log/info (str fingerprints))

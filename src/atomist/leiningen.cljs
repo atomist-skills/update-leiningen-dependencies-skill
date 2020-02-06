@@ -7,7 +7,7 @@
 ;; TODO should return a channel
 (defn apply-leiningen-dependency [{:keys [project data configurations]}]
   (log/info "configurations " configurations)
-  (let [f (io/file (. project -basedir) "project.clj")]
+  (let [f (io/file (. ^js project -basedir) "project.clj")]
     (if (fs/fexists? (.getPath f))
       (doseq [{:keys [type name data] :as fingerprint} (-> data :CommitFingerprintImpact :offTarget)]
         (log/infof "offTarget %s %s %s" type name (str data))
@@ -16,7 +16,7 @@
           #_(io/spit f (atomist.lein/edit-library (io/slurp f) (-> data (nth 0)) (-> data (nth 1)))))))))
 
 (defn extract [project]
-  (let [f (io/file (. project -baseDir) "project.clj")]
+  (let [f (io/file (. ^js project -baseDir) "project.clj")]
     (if (fs/fexists? (.getPath f))
       (atomist.lein/deps f)
       [])))
