@@ -13,7 +13,8 @@
             [atomist.promise :as promise]
             [atomist.leiningen :as leiningen]
             [atomist.sha :as sha]
-            [cljs-node-io.core :as io])
+            [cljs-node-io.core :as io]
+            ["@atomist/automation-client" :as ac])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn compute-leiningen-fingerprints
@@ -98,6 +99,9 @@
        (api/extract-github-user-token)
        (api/set-message-id)) (assoc request :branch "master")))
 
+(def x (. ac -PlainLogging))
+(set! (.. x -console -level) "debug")
+
 (defn ^:export handler
   "handler
     must return a Promise - we don't do anything with the value
@@ -105,6 +109,7 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
+  ((. ac -configureLogging) x)
   (api/make-request
    data
    sendreponse
