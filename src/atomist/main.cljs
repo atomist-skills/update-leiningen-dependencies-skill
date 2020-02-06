@@ -27,7 +27,9 @@
   [project]
   (go
    (try
-     (log/info "project " (. project -baseDir))
+     (log/info "project \"" (. project -baseDir) "\".")
+     (doseq [f (io/file-seq (. project -baseDir))]
+       (log/info f))
      (let [fingerprints (leiningen/extract project)]
        (log/info (str fingerprints))
        (->> (for [x fingerprints]
@@ -46,7 +48,6 @@
 (defn show-fingerprints-in-slack [handler]
   (fn [request]
     (go
-     (log/info "size of fingperprint results %s" (count (:results request)))
      (if-let [fingerprints (:results request)]
        (<! (api/snippet-message request (json/->str fingerprints) "application/json" "fingerprints"))
        (<! (api/simple-message request "no fingerprints")))

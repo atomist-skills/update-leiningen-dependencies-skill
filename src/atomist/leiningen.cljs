@@ -4,6 +4,7 @@
             [cljs-node-io.fs :as fs]
             [atomist.cljs-log :as log]))
 
+;; TODO should return a channel
 (defn apply-leiningen-dependency [{:keys [project data configurations]}]
   (log/info "configurations " configurations)
   (let [f (io/file (. project -basedir) "project.clj")]
