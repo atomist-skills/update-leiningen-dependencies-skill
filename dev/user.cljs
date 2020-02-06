@@ -1,6 +1,7 @@
 (ns user
   (:require [atomist.main]
             [atomist.cljs-log :as log]
+            [atomist.api :as api]
             [cljs.core.async :refer [<!]]
             [atomist.sdmprojectmodel :as sdm])
   (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -50,7 +51,7 @@
                                            :after {:message ""}}]}
                             :secrets [{:uri "atomist://api-key" :value token}]
                             :configurations []
-                            :extensions [:team_id "AK748NQC5"]}
+                            :extensions {:team_id "AK748NQC5"}}
                        (fn [& args] (log/info "sendreponse " args)))
 
  ;; PUSH handler on the clj1 repo
@@ -62,10 +63,17 @@
                                            :after {:message ""}}]}
                             :secrets [{:uri "atomist://api-key" :value token}]
                             :configurations []
-                            :extensions [:team_id "AK748NQC5"]}
+                            :extensions {:team_id "AK748NQC5"}}
                        (fn [& args] (log/info "sendreponse " args)))
  (go
   (cljs.pprint/pprint (<! (sdm/do-with-shallow-cloned-project
-                           (fn [p] (atomist.main/compute-leiningen-fingerprints p))
+                           (fn [p] (atomist.main/compute-leiningen-fingerprints {}))
                            github-token
-                           {:owner "atomisthqa" :repo "clj1" :branch "master"})))))
+                           {:owner "atomisthqa" :repo "clj1" :branch "master"}))))
+
+ ((api/run-sdm-project-callback
+   (fn [request]
+     (cljs.pprint/pprint request))
+   atomist.main/compute-leiningen-fingerprints)
+  {:ref {:owner "atomisthqa" :repo "clj1" :branch "master"}
+   :token github-token}))

@@ -28,8 +28,7 @@
   (go
    (try
      (log/info "project \"" (. project -baseDir) "\".")
-     (doseq [f (io/file-seq (. project -baseDir))]
-       (log/info f))
+     (log/info "keys:  " (.keys js/Object project))
      (let [fingerprints (leiningen/extract project)]
        (log/info (str fingerprints))
        (->> (for [x fingerprints]
@@ -41,9 +40,10 @@
                 :displayType "Lein dependencies"))
             (into [])))
      (catch :default ex
+       (log/error "unable to compute leiningen fingerprints")
        (log/error ex)
-       [{:failure "unable to extract"
-         :message (str ex)}]))))
+       {:error ex
+        :message "unable to compute leiningen fingerprints"}))))
 
 (defn show-fingerprints-in-slack [handler]
   (fn [request]
@@ -83,10 +83,16 @@
         (-> request :data :CommitFingerprintImpact :branch))
        (check-for-targets-to-apply)) request))
 
+(defn log-attempt [handler]
+  (fn [request]
+    (log/infof "compute leiningen fingerprints in %s" (:ref request))
+    (handler request)))
+
 (defn command-handler [request]
   ((-> (api/finished :message "handling CommandHandler")
        (show-fingerprints-in-slack)
        (api/run-sdm-project-callback compute-leiningen-fingerprints)
+       (log-attempt)
        (api/create-ref-from-first-linked-repo)
        (api/extract-linked-repos)
        (api/extract-github-user-token)

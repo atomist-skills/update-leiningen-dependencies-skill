@@ -1,6 +1,6 @@
 {:paths ["src"]
  :deps {org.clojure/clojurescript {:mvn/version "1.10.520"}
-        com.atomist/api-cljs {:mvn/version "0.1.41"}
+        com.atomist/api-cljs {:mvn/version "0.1.42"}
         rewrite-cljs {:mvn/version "0.4.4"}}
  :aliases
  {:dev
