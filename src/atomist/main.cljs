@@ -25,21 +25,14 @@
    Transform Maven dependencies into Fingerprints
 
    Our data structure has {:keys [group artifact version name version scope]}"
-  [project]
+  [request project]
   (go
    (try
-     (log/info "project \"" (. ^js project -baseDir) "\".")
-     (log/info "keys:  " (.keys js/Object project))
      (let [fingerprints (leiningen/extract project)]
-       (log/info (str fingerprints))
-       (->> (for [x fingerprints]
-              (assoc x
-                :sha (sha/sha-256 (json/->str (:data x)))
-                :value (json/->str (:value x))
-                :displayName (:name x)
-                :displayValue (nth (:data x) 1)
-                :displayType "Lein dependencies"))
-            (into [])))
+       ;; first create PRs for any off target deps
+       (<! (leiningen/apply-leiningen-dependency (assoc request :project project :fingerprints fingerprints)))
+       ;; return the fingerprints in a form that they can be added to the graph
+       fingerprints)
      (catch :default ex
        (log/error "unable to compute leiningen fingerprints")
        (log/error ex)
@@ -99,9 +92,6 @@
        (api/extract-github-user-token)
        (api/set-message-id)) (assoc request :branch "master")))
 
-(def x (. ac -PlainLogging))
-(set! (.. x -console -level) "debug")
-
 (defn ^:export handler
   "handler
     must return a Promise - we don't do anything with the value
@@ -109,7 +99,6 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
-  ((. ac -configureLogging) x)
   (api/make-request
    data
    sendreponse

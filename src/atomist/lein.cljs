@@ -6,7 +6,9 @@
             [cljs.pprint :refer [pprint]]
             [cljs.reader :refer [read-string]]
             [goog.string :as gstring]
-            [goog.string.format]))
+            [goog.string.format]
+            [atomist.json :as json]
+            [atomist.sha :as sha]))
 
 (defn edit-library [s library-name library-version]
   (-> s
@@ -69,10 +71,14 @@
       (str)))
 
 (defn deps [f]
-  (->> (for [dep (project-dependencies f)]
+  (->> (for [dep (project-dependencies f) :let [data (into [] (take 2 dep))]]
          {:type "clojure-project-deps"
           :name (gstring/replaceAll (nth dep 0) "/" "::")
-          :data (into [] (take 2 dep))
+          :displayName (nth dep 0)
+          :displayValue (nth data 1)
+          :displayType "Lein dependencies"
+          :data data
+          :sha (sha/sha-256 (json/->str data))
           :abbreviation "lein-deps"
           :version "0.0.1"})
        (into [])))
