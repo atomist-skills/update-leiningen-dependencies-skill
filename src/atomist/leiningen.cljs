@@ -18,14 +18,18 @@
                :parameters [{:name "name" :value "crap1"}
                             {:name "version" :value "1.1"}]}])
 
+(def configs1 [{:name "crap" :parameters nil}])
+
 (defn- get-param [x s]
   (->> x (filter #(= s (:name %))) first :value))
 
 (defn- target-map
   [configs]
   (->> configs
+       (filter #(and (not (empty? (:parameters %)))))
        (map :parameters)
        (map (fn [x] (assoc {} :name (get-param x "name") :version (get-param x "version"))))
+       (filter #(and (:name %) (:version %)))
        (map #(let [data [(:name %) (:version %)]] (assoc % :sha (sha/sha-256 (json/->str data)) :data data)))
        (map #(assoc % :name (gstring/replaceAll (:name %) "/" "::")
                       :library (:name %)))

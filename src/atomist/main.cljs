@@ -64,13 +64,6 @@
 
 (defn- handle-impact-event [request]
   ((-> (api/finished :message "handling CommitFingerprintImpact")
-       (api/run-sdm-project-callback
-        (sdm/commit-then-PR
-         (fn [p] (leiningen/apply-leiningen-dependency (assoc request :project p)))
-         {:branch (str (random-uuid))
-          :target-branch "master"
-          :body "apply leiningen target dependencies"
-          :title "apply leiningen target dependencies"}))
        (api/extract-github-token)
        (api/create-ref-from-repo
         (-> request :data :CommitFingerprintImpact :repo)
