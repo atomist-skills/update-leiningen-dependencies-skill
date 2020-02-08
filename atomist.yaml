@@ -29,7 +29,7 @@ skill:
   homepage: https://github.com/atomist-skills/update-leiningen-dependencies
   repository: https://github.com/atomist-skills/update-leiningen-dependencies
   icon: https://leiningen.org/img/leiningen.jpg
-  dispatch: multiple
+  dispatch: single
 
   package:
     use: 'atomist/package-cljs-skill'
