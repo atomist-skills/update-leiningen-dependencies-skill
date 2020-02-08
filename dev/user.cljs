@@ -71,13 +71,13 @@
                        (fn [& args] (log/info "sendreponse " args)))
  (go
   (cljs.pprint/pprint (<! (sdm/do-with-shallow-cloned-project
-                           (fn [p] (atomist.main/compute-leiningen-fingerprints p))
+                           (fn [p] (atomist.main/compute-fingerprints p))
                            github-token
                            {:owner "atomisthqa" :repo "clj1" :branch "master"}))))
 
  ((api/run-sdm-project-callback
    (fn [request]
      (cljs.pprint/pprint request))
-   atomist.main/compute-leiningen-fingerprints)
+   atomist.main/compute-fingerprints)
   {:ref {:owner "atomisthqa" :repo "clj1" :branch "master"}
    :token github-token}))

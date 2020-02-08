@@ -17,14 +17,7 @@
             ["@atomist/automation-client" :as ac])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defn compute-leiningen-fingerprints
-  "TODO - we used to support multiple pom.xml files in the Project.  The
-          path field was added to the Fingerprint to manage this.
-          This version supports only a pom.xml in the root of the Repo.
-
-   Transform Maven dependencies into Fingerprints
-
-   Our data structure has {:keys [group artifact version name version scope]}"
+(defn compute-fingerprints
   [request project]
   (go
    (try
@@ -39,14 +32,6 @@
        {:error ex
         :message "unable to compute leiningen fingerprints"}))))
 
-(defn show-fingerprints-in-slack [handler]
-  (fn [request]
-    (go
-     (if-let [fingerprints (:results request)]
-       (<! (api/snippet-message request (json/->str fingerprints) "application/json" "fingerprints"))
-       (<! (api/simple-message request "no fingerprints")))
-     (handler request))))
-
 (defn check-for-targets-to-apply [handler]
   (fn [request]
     (if (and
@@ -58,7 +43,7 @@
 (defn- handle-push-event [request]
   ((-> (api/finished :message "handling Push")
        (api/send-fingerprints)
-       (api/run-sdm-project-callback compute-leiningen-fingerprints)
+       (api/run-sdm-project-callback compute-fingerprints)
        (api/extract-github-token)
        (api/create-ref-from-push-event)) request))
 
@@ -77,8 +62,8 @@
 
 (defn command-handler [request]
   ((-> (api/finished :message "handling CommandHandler")
-       (show-fingerprints-in-slack)
-       (api/run-sdm-project-callback compute-leiningen-fingerprints)
+       (api/show-results-in-slack :result-type "fingerprints")
+       (api/run-sdm-project-callback compute-fingerprints)
        (log-attempt)
        (api/create-ref-from-first-linked-repo)
        (api/extract-linked-repos)
