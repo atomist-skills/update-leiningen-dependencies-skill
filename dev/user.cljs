@@ -66,9 +66,15 @@
                                                                       :credential {:secret github-token}}}}
                                            :after {:message ""}}]}
                             :secrets [{:uri "atomist://api-key" :value token}]
-                            :configurations []
+                            :configurations [{:name "metosin/compojure-api"
+                                              :parameters [{:name "name" :value "metosin/compojure-api"}
+                                                           {:name "version" :value "1.1.12"}]}
+                                             {:name "crap1"
+                                              :parameters [{:name "name" :value "crap1"}
+                                                           {:name "version" :value "1.1"}]}]
                             :extensions {:team_id "AK748NQC5"}}
                        (fn [& args] (log/info "sendreponse " args)))
+
  (go
   (cljs.pprint/pprint (<! (sdm/do-with-shallow-cloned-project
                            (fn [p] (atomist.main/compute-fingerprints p))

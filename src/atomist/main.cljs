@@ -14,7 +14,8 @@
             [atomist.leiningen :as leiningen]
             [atomist.sha :as sha]
             [cljs-node-io.core :as io]
-            ["@atomist/automation-client" :as ac])
+            ["@atomist/automation-client" :as ac]
+            [atomist.deps :as deps])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn compute-fingerprints
@@ -23,7 +24,9 @@
    (try
      (let [fingerprints (leiningen/extract project)]
        ;; first create PRs for any off target deps
-       (<! (leiningen/apply-leiningen-dependency (assoc request :project project :fingerprints fingerprints)))
+       (<! (deps/apply-name-version-fingerprint-target
+            (assoc request :project project :fingerprints fingerprints)
+            leiningen/apply-library-editor))
        ;; return the fingerprints in a form that they can be added to the graph
        fingerprints)
      (catch :default ex
