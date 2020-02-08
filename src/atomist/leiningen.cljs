@@ -57,8 +57,8 @@
                                       (nth target-data 0) (nth target-data 1))]
              (log/info body)
              (<! (apply-library-editor project
-                                       {:branch (-> request :ref :branch)
-                                        :target-branch (:library target)
+                                       {:branch (:library target)
+                                        :target-branch (-> request :ref :branch)
                                         :title (gstring/format "%s:  update leiningen dependencies skill requesting change" (:library target))
                                         :body body}
                                        (nth target-data 0)
