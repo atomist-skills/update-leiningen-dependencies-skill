@@ -44,7 +44,7 @@
       (handler request))))
 
 (defn- handle-push-event [request]
-  ((-> (api/finished :message "handling Push")
+  ((-> (api/finished :message "handling Push" :success "successfully handled Push event")
        (api/send-fingerprints)
        (api/run-sdm-project-callback compute-fingerprints)
        (api/extract-github-token)
