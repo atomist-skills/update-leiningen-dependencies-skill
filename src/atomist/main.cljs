@@ -63,14 +63,29 @@
     (log/infof "compute leiningen fingerprints in %s" (:ref request))
     (handler request)))
 
-(defn command-handler [request]
-  ((-> (api/finished :message "handling CommandHandler")
+(defn fp-command-handler [request]
+  ((-> (api/finished :message "handling extraction CommandHandler")
        (api/show-results-in-slack :result-type "fingerprints")
        (api/run-sdm-project-callback compute-fingerprints)
        (log-attempt)
        (api/create-ref-from-first-linked-repo)
        (api/extract-linked-repos)
        (api/extract-github-user-token)
+       (api/set-message-id)) (assoc request :branch "master")))
+
+(defn update-command-handler [request]
+  ((-> (api/finished :message "handling application CommandHandler")
+       (api/show-results-in-slack :result-type "fingerprints")
+       (api/run-sdm-project-callback compute-fingerprints)
+       (log-attempt)
+       (api/create-ref-from-first-linked-repo)
+       (api/extract-linked-repos)
+       (api/extract-github-user-token)
+       (api/check-required-parameters {:name "dependency"
+                                       :required true
+                                       :pattern ".*"
+                                       :validInput "[lein-lib version]"})
+       (api/extract-cli-parameters [[nil "--dependency dependency" "[lib version]"]])
        (api/set-message-id)) (assoc request :branch "master")))
 
 (defn ^:export handler
@@ -92,5 +107,8 @@
        (contains? (:data request) :CommitFingerprintImpact)
        (handle-impact-event request)
 
-       (= "UpdateLeiningenDependencies" (:command request))
-       (command-handler request)))))
+       (= "ShowLeiningenDependencies" (:command request))
+       (fp-command-handler request)
+
+       (= "UpdateLeiningenDependency" (:command request))
+       (update-command-handler request)))))

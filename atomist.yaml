@@ -41,9 +41,12 @@ skill:
     timeout: 60
 
 commands:
-- name: UpdateLeiningenDependencies
+- name: ShowLeiningenDependencies
   description: "summary of the leiningen dependencies"
-  pattern: "^update-leiningen-dependencies.*$"
+  pattern: "^lein fingerprints.*$"
+- name: UpdateLeiningenDependency
+  description: "summary of the leiningen dependencies"
+  pattern: "^lein update.*$"
 
 parameters:
   - string:
