@@ -4,6 +4,8 @@
 
 ## What it does
 
+Keeps leiningen dependencies up to date
+
 ## Configuration
 
 | Name                   | Value        | Type   | Required | Notes |
