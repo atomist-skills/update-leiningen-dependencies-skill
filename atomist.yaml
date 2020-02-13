@@ -69,7 +69,7 @@ parameters:
       displayName: "Leiningen Library name"
       name: "dependencies"
       required: false
-  - repoFilters:
+  - repoFilter:
       description: "The set of Repositories for this String Replace rule."
       displayName: "Repository Scope"
       name: "scope"
