@@ -2,6 +2,8 @@
   (:require [atomist.main]
             [atomist.cljs-log :as log]
             [atomist.api :as api]
+            [atomist.deps :as deps]
+            [atomist.leiningen]
             [cljs.core.async :refer [<!]]
             [atomist.sdmprojectmodel :as sdm]
             ["@atomist/sdm" :as atomistsdm]
@@ -87,3 +89,22 @@
    atomist.main/compute-fingerprints)
   {:ref {:owner "atomisthqa" :repo "clj1" :branch "master"}
    :token github-token}))
+
+(comment
+ ;; this will actually raise a PR when run with a real project
+ (let [project #js {:baseDir "/Users/slim/atomist/atomisthqa/clj1"}]
+   (go (println (<!
+                 (deps/apply-policy-target
+                  {:fingerprints (atomist.leiningen/extract project)
+                   :project project
+                   :ref {:branch "master"}
+                   :secrets [{:uri "atomist://api-key" :value token}]
+                   :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}
+                                                  {:name "dependencies" :value "[[org.clojure/clojure \"1.10.1\"]]"}]}
+                                    {:parameters [{:name "policy" :value "latestSemVerAvailable"}
+                                                  {:name "dependencies" :value "[mount]"}]}
+                                    {:parameters [{:name "policy" :value "latestSemVerUsed"}
+                                                  {:name "dependencies" :value "[com.atomist/common]"}]}]}
+                  (fn [_ pr-opts lib-name lib-version]
+                    (log/info "update " lib-name lib-version)
+                    (go :done))))))))

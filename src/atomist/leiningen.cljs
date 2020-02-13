@@ -43,19 +43,3 @@
                  :failure))))
     pr-opts) project))
 
-(comment
- ;; this will actually raise a PR when run with a real project
- (let [project #js {:baseDir "/Users/slim/atomist/atomisthqa/clj1"}]
-   (deps/apply-name-version-fingerprint-target
-    {:fingerprints (extract project)
-     :project project
-     :ref {:branch "master"}
-     :configurations [{:name "metosin/compojure-api"
-                       :parameters [{:name "name" :value "metosin/compojure-api"}
-                                    {:name "version" :value "1.1.12"}]}
-                      {:name "crap1"
-                       :parameters [{:name "name" :value "crap1"}
-                                    {:name "version" :value "1.1"}]}]}
-    (fn [_ pr-opts lib-name lib-version]
-
-      (go :done)))))

@@ -17,7 +17,7 @@
 skill:
   name: "atomist/update-leiningen-dependencies"
   title: Update Leiningen Dependencies
-  version: "0.1.4"
+  version: "0.1.5"
   author: Atomist
   description: Automatically update dependencies based on your own policy
   long_description: |
@@ -45,20 +45,30 @@ commands:
   description: "summary of the leiningen dependencies"
   pattern: "^lein fingerprints.*$"
 - name: UpdateLeiningenDependency
-  description: "summary of the leiningen dependencies"
+  description: "update one dependency"
   pattern: "^lein update.*$"
 
 parameters:
+  - singleChoice:
+      description: "Choose a policy for how target dependencies should be discovered by this skill"
+      displayName: "Target Policy"
+      name: "policy"
+      required: true
+      options:
+        - description: "Use the latest semver version found within current set of Projects"
+          text: "latest semver used"
+          value: "latestSemVerUsed"
+        - description: "Use the latest semver available in clojars"
+          text: "latest semver available"
+          value: "latestSemVerAvailable"
+        - description: "Use the set of leiningen dependencies configured manually in this Skill"
+          text: "manual"
+          value: "manualConfiguration"
   - string:
-      description: "Leiningen libraries are, by convention, symbols with or without namespaces."
+      description: "Manually Configured set of Lein dependencies"
       displayName: "Leiningen Library name"
-      name: "name"
-      required: true
-  - string:
-      description: "Leiningen library versions are typically semver compliant strings"
-      displayName: "Leiningen Library version"
-      name: "version"
-      required: true
+      name: "dependencies"
+      required: false
   - repoFilters:
       description: "The set of Repositories for this String Replace rule."
       displayName: "Repository Scope"
