@@ -35,7 +35,7 @@
   ((sdm/commit-then-PR
     (fn [p] (go
              (try
-               (let [f (io/file (. ^js project -baseDir) "project.clj")]
+               (let [f (io/file (. ^js p -baseDir) "project.clj")]
                  (io/spit f (atomist.lein/edit-library (io/slurp f) library-name library-version)))
                :success
                (catch :default ex
