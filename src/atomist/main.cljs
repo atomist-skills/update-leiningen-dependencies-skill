@@ -15,25 +15,28 @@
             [atomist.sha :as sha]
             [cljs-node-io.core :as io]
             ["@atomist/automation-client" :as ac]
-            [atomist.deps :as deps])
+            [atomist.deps :as deps]
+            [clojure.core.async :as async])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn compute-fingerprints
   [request project]
-  (go
-   (try
-     (let [fingerprints (leiningen/extract project)]
-       ;; first create PRs for any off target deps
-       (<! (deps/apply-policy-target
-            (assoc request :project project :fingerprints fingerprints)
-            leiningen/apply-library-editor))
-       ;; return the fingerprints in a form that they can be added to the graph
-       fingerprints)
-     (catch :default ex
-       (log/error "unable to compute leiningen fingerprints")
-       (log/error ex)
-       {:error ex
-        :message "unable to compute leiningen fingerprints"}))))
+  (let [c (async/chan)]
+    (go
+     (try
+       (let [fingerprints (leiningen/extract project)]
+         ;; first create PRs for any off target deps
+         (<! (deps/apply-policy-target
+              (assoc request :project project :fingerprints fingerprints)
+              leiningen/apply-library-editor))
+         ;; return the fingerprints in a form that they can be added to the graph
+         (>! c fingerprints))
+       (catch :default ex
+         (log/error "unable to compute leiningen fingerprints")
+         (log/error ex)
+         (>! c {:error ex
+                :message "unable to compute leiningen fingerprints"}))))
+    c))
 
 (defn check-for-targets-to-apply [handler]
   (fn [request]
@@ -95,6 +98,7 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
+  (sdm/enable-sdm-debug-logging)
   (api/make-request
    data
    sendreponse

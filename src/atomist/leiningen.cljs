@@ -1,6 +1,5 @@
 (ns atomist.leiningen
   (:require [atomist.lein]
-            [atomist.deps :as deps]
             [cljs-node-io.core :as io]
             [cljs-node-io.fs :as fs]
             [atomist.cljs-log :as log]
@@ -33,13 +32,14 @@
     returns channel"
   [project pr-opts library-name library-version]
   ((sdm/commit-then-PR
-    (fn [p] (go
-             (try
-               (let [f (io/file (. ^js p -baseDir) "project.clj")]
-                 (io/spit f (atomist.lein/edit-library (io/slurp f) library-name library-version)))
-               :success
-               (catch :default ex
-                 (log/error "failure updating project.clj for dependency change" ex)
-                 :failure))))
+    (fn [p]
+      (go
+       (try
+         (let [f (io/file (. ^js p -baseDir) "project.clj")]
+           (io/spit f (atomist.lein/edit-library (io/slurp f) library-name library-version)))
+         :success
+         (catch :default ex
+           (log/error "failure updating project.clj for dependency change" ex)
+           :failure))))
     pr-opts) project))
 
