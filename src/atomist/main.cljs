@@ -19,6 +19,19 @@
             [clojure.core.async :as async])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
+(defn just-fingerprints
+  [request project]
+  (go
+   (try
+     (let [fingerprints (leiningen/extract project)]
+       ;; return the fingerprints in a form that they can be added to the graph
+       fingerprints)
+     (catch :default ex
+       (log/error "unable to compute leiningen fingerprints")
+       (log/error ex)
+       {:error ex
+        :message "unable to compute leiningen fingerprints"}))))
+
 (defn compute-fingerprints
   [request project]
   (let [c (async/chan)]
@@ -66,10 +79,19 @@
     (log/infof "compute leiningen fingerprints in %s" (:ref request))
     (handler request)))
 
+(defn set-up-target-configuration [handler]
+  (fn [request]
+    (log/infof "")
+    (handler (assoc request
+               :configurations [{:parameters [{:name "policy"
+                                               :value "manualConfiguration"}
+                                              {:name "dependencies"
+                                               :value (gstring/format "[%s]" (:dependency request))}]}]))))
+
 (defn fp-command-handler [request]
   ((-> (api/finished :message "handling extraction CommandHandler")
        (api/show-results-in-slack :result-type "fingerprints")
-       (api/run-sdm-project-callback compute-fingerprints)
+       (api/run-sdm-project-callback just-fingerprints)
        (log-attempt)
        (api/create-ref-from-first-linked-repo)
        (api/extract-linked-repos)
@@ -80,6 +102,7 @@
   ((-> (api/finished :message "handling application CommandHandler")
        (api/show-results-in-slack :result-type "fingerprints")
        (api/run-sdm-project-callback compute-fingerprints)
+       (set-up-target-configuration)
        (log-attempt)
        (api/create-ref-from-first-linked-repo)
        (api/extract-linked-repos)
