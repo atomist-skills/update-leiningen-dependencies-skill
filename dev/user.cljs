@@ -4,26 +4,102 @@
             [atomist.api :as api]
             [atomist.deps :as deps]
             [atomist.leiningen]
-            [cljs.core.async :refer [<!]]
+            [cljs.core.async :refer [<! chan]]
             [atomist.sdmprojectmodel :as sdm]
+            [cljs-node-io.core :refer [slurp spit]]
+            [atomist.editors :as editors]
+            [atomist.cljs-log :as log]
             ["@atomist/sdm" :as atomistsdm]
             ["@atomist/automation-client" :as ac]
             ["@atomist/automation-client/lib/operations/support/editorUtils" :as editor-utils]
             [atomist.json :as json])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
+(comment
+
+ ((api/run-sdm-project-callback
+   (fn [request] (println "final callback" request))
+   (fn [request project]
+     ((sdm/edit-inside-PR
+       (fn [p]
+         ((sdm/do-with-files
+           (fn [f]
+             (go (<! (sdm/set-content f (str (<! (sdm/get-content f)) ".")))
+                 true))
+           "**/README.md") p))
+       {:branch "testbranch"
+        :target-branch "master"
+        :body "atomist-determined body"
+        :title "atomist-determined title"}) project)))
+  {:ref {:branch "testbranch"
+         :owner "atomisthqa"
+         :repo "clj1"}
+   :token github-token
+   :done-channel (chan)
+   :sendreponse (fn [obj] (log/info "sendreponse " (js->clj obj)))
+   :secrets [{:uri "atomist://api-key" :value token}]})
+
+ ((api/run-sdm-project-callback
+   (fn [request] (println "final callback" request))
+   atomist.main/compute-fingerprints)
+  {:ref {:branch "master"
+         :owner "atomisthqa"
+         :repo "clj1"}
+   :token github-token
+   :secrets [{:uri "atomist://api-key" :value token}]
+   :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}
+                                  {:name "dependencies" :value "[[org.clojure/clojure \"1.10.2\"]]"}]}
+                    {:parameters [{:name "policy" :value "latestSemVerAvailable"}
+                                  {:name "dependencies" :value "[mount]"}]}
+                    {:parameters [{:name "policy" :value "latestSemVerUsed"}
+                                  {:name "dependencies" :value "[com.atomist/common]"}]}]})
+
+ (atomist.main/handler
+  #js {:command "ShowLeiningenDependencies"
+       :source {:slack {:channel {:id "CDU23TC1H"}
+                        :user {:id "UDF0NFB5M"}}}
+       :team {:id "AK748NQC5"}
+       :parameters []
+       :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}
+                                      {:name "dependencies" :value "[[org.clojure/clojure \"1.10.2\"]]"}]}
+                        {:parameters [{:name "policy" :value "latestSemVerAvailable"}
+                                      {:name "dependencies" :value "[mount]"}]}
+                        {:parameters [{:name "policy" :value "latestSemVerUsed"}
+                                      {:name "dependencies" :value "[com.atomist/common]"}]}]
+       :raw_message "not used"
+       :secrets [{:uri "atomist://api-key" :value token}]}
+  fake-response)
+
+
+ ;; this will actually raise a PR when run with a real project
+ (let [project #js {:baseDir "/Users/slim/atomist/atomisthqa/clj1"}]
+   (go (println (<!
+                 (deps/apply-policy-target
+                  {:fingerprints (atomist.leiningen/extract project)
+                   :project project
+                   :ref {:branch "master"}
+                   :secrets [{:uri "atomist://api-key" :value token}]
+                   :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}
+                                                  {:name "dependencies" :value "[[org.clojure/clojure \"1.10.1\"]]"}]}
+                                    {:parameters [{:name "policy" :value "latestSemVerAvailable"}
+                                                  {:name "dependencies" :value "[mount]"}]}
+                                    {:parameters [{:name "policy" :value "latestSemVerUsed"}
+                                                  {:name "dependencies" :value "[com.atomist/common]"}]}]}
+                  atomist.leiningen/apply-library-editor))))))
+
 (enable-console-print!)
 
 (def token (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_STAGING))
 (def github-token (.. js/process -env -GITHUB_TOKEN))
-(println token)
-(println github-token)
-
 
 (defn fake-response [obj]
   (log/info "response ---------------")
   (log/info (js->clj obj))
   (log/info "response ---------------"))
+
+(println token)
+
+(sdm/enable-sdm-debug-logging)
 
 (comment
  ;; response that indicates there is no linked credential
@@ -98,52 +174,4 @@
   {:ref {:owner "atomisthqa" :repo "clj1" :branch "master"}
    :token github-token}))
 
-(comment
- (sdm/enable-sdm-debug-logging)
- ((api/run-sdm-project-callback
-   (fn [request] (println "final callback" request))
-   atomist.main/compute-fingerprints)
-  {:ref {:branch "master"
-         :owner "atomisthqa"
-         :repo "clj1"}
-   :token github-token
-   :secrets [{:uri "atomist://api-key" :value token}]
-   :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}
-                                  {:name "dependencies" :value "[[org.clojure/clojure \"1.10.2\"]]"}]}
-                    {:parameters [{:name "policy" :value "latestSemVerAvailable"}
-                                  {:name "dependencies" :value "[mount]"}]}
-                    {:parameters [{:name "policy" :value "latestSemVerUsed"}
-                                  {:name "dependencies" :value "[com.atomist/common]"}]}]})
 
- (atomist.main/handler
-  #js {:command "ShowLeiningenDependencies"
-       :source {:slack {:channel {:id "CDU23TC1H"}
-                        :user {:id "UDF0NFB5M"}}}
-       :team {:id "AK748NQC5"}
-       :parameters []
-       :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}
-                                      {:name "dependencies" :value "[[org.clojure/clojure \"1.10.2\"]]"}]}
-                        {:parameters [{:name "policy" :value "latestSemVerAvailable"}
-                                      {:name "dependencies" :value "[mount]"}]}
-                        {:parameters [{:name "policy" :value "latestSemVerUsed"}
-                                      {:name "dependencies" :value "[com.atomist/common]"}]}]
-       :raw_message "not used"
-       :secrets [{:uri "atomist://api-key" :value token}]}
-  fake-response)
-
-
- ;; this will actually raise a PR when run with a real project
- (let [project #js {:baseDir "/Users/slim/atomist/atomisthqa/clj1"}]
-   (go (println (<!
-                 (deps/apply-policy-target
-                  {:fingerprints (atomist.leiningen/extract project)
-                   :project project
-                   :ref {:branch "master"}
-                   :secrets [{:uri "atomist://api-key" :value token}]
-                   :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}
-                                                  {:name "dependencies" :value "[[org.clojure/clojure \"1.10.1\"]]"}]}
-                                    {:parameters [{:name "policy" :value "latestSemVerAvailable"}
-                                                  {:name "dependencies" :value "[mount]"}]}
-                                    {:parameters [{:name "policy" :value "latestSemVerUsed"}
-                                                  {:name "dependencies" :value "[com.atomist/common]"}]}]}
-                  atomist.leiningen/apply-library-editor))))))

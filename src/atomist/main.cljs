@@ -81,7 +81,7 @@
 
 (defn set-up-target-configuration [handler]
   (fn [request]
-    (log/infof "")
+    (log/infof "set up target dependency to converge on [%s]" (:dependency request))
     (handler (assoc request
                :configurations [{:parameters [{:name "policy"
                                                :value "manualConfiguration"}
