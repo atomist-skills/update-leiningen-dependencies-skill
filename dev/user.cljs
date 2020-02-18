@@ -19,6 +19,22 @@
 
  ((api/run-sdm-project-callback
    (fn [request] (println "final callback" request))
+   atomist.main/compute-fingerprints)
+  {:ref {:branch "master"
+         :owner "atomisthqa"
+         :repo "clj1"}
+   :token github-token
+   :secrets [{:uri "atomist://api-key" :value token}]
+   :team {:id "AK748NQC5"}
+   :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}
+                                  {:name "dependencies" :value "[[org.clojure/clojure \"1.10.2\"]]"}]}
+                    {:parameters [{:name "policy" :value "latestSemVerAvailable"}
+                                  {:name "dependencies" :value "[mount]"}]}
+                    {:parameters [{:name "policy" :value "latestSemVerUsed"}
+                                  {:name "dependencies" :value "[com.atomist/common]"}]}]})
+
+ ((api/run-sdm-project-callback
+   (fn [request] (println "final callback" request))
    (fn [request project]
      ((sdm/edit-inside-PR
        (fn [p]
@@ -31,28 +47,13 @@
         :target-branch "master"
         :body "atomist-determined body"
         :title "atomist-determined title"}) project)))
-  {:ref {:branch "testbranch"
+  {:ref {:branch "master"
          :owner "atomisthqa"
          :repo "clj1"}
    :token github-token
    :done-channel (chan)
    :sendreponse (fn [obj] (log/info "sendreponse " (js->clj obj)))
    :secrets [{:uri "atomist://api-key" :value token}]})
-
- ((api/run-sdm-project-callback
-   (fn [request] (println "final callback" request))
-   atomist.main/compute-fingerprints)
-  {:ref {:branch "master"
-         :owner "atomisthqa"
-         :repo "clj1"}
-   :token github-token
-   :secrets [{:uri "atomist://api-key" :value token}]
-   :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}
-                                  {:name "dependencies" :value "[[org.clojure/clojure \"1.10.2\"]]"}]}
-                    {:parameters [{:name "policy" :value "latestSemVerAvailable"}
-                                  {:name "dependencies" :value "[mount]"}]}
-                    {:parameters [{:name "policy" :value "latestSemVerUsed"}
-                                  {:name "dependencies" :value "[com.atomist/common]"}]}]})
 
  (atomist.main/handler
   #js {:command "ShowLeiningenDependencies"

@@ -1,6 +1,6 @@
 (ns atomist.main
   (:require [cljs.pprint :refer [pprint]]
-            [cljs.core.async :refer [<! >! timeout chan]]
+            [cljs.core.async :refer [<! >! timeout chan] :as async]
             [clojure.string :as s]
             [goog.crypt.base64 :as b64]
             [goog.string :as gstring]
@@ -15,8 +15,7 @@
             [atomist.sha :as sha]
             [cljs-node-io.core :as io]
             ["@atomist/automation-client" :as ac]
-            [atomist.deps :as deps]
-            [clojure.core.async :as async])
+            [atomist.deps :as deps])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn just-fingerprints
@@ -34,22 +33,21 @@
 
 (defn compute-fingerprints
   [request project]
-  (let [c (async/chan)]
-    (go
-     (try
-       (let [fingerprints (leiningen/extract project)]
-         ;; first create PRs for any off target deps
-         (<! (deps/apply-policy-target
-              (assoc request :project project :fingerprints fingerprints)
-              leiningen/apply-library-editor))
-         ;; return the fingerprints in a form that they can be added to the graph
-         (>! c fingerprints))
-       (catch :default ex
-         (log/error "unable to compute leiningen fingerprints")
-         (log/error ex)
-         (>! c {:error ex
-                :message "unable to compute leiningen fingerprints"}))))
-    c))
+  (go
+   (try
+     (let [fingerprints (leiningen/extract project)]
+       ;; first create PRs for any off target deps
+       (<! (deps/apply-policy-targets
+            (assoc request :project project :fingerprints fingerprints)
+            "clojure-project-deps"
+            leiningen/apply-library-editor))
+       ;; return the fingerprints in a form that they can be added to the graph
+       fingerprints)
+     (catch :default ex
+       (log/error "unable to compute leiningen fingerprints")
+       (log/error ex)
+       {:error ex
+        :message "unable to compute leiningen fingerprints"}))))
 
 (defn check-for-targets-to-apply [handler]
   (fn [request]

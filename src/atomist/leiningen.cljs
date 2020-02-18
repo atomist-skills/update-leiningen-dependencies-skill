@@ -30,16 +30,13 @@
       library-version - leiningen library version string
 
     returns channel"
-  [project pr-opts library-name library-version]
-  ((sdm/commit-then-PR
-    (fn [p]
-      (go
-       (try
-         (let [f (io/file (. ^js p -baseDir) "project.clj")]
-           (io/spit f (atomist.lein/edit-library (io/slurp f) library-name library-version)))
-         :success
-         (catch :default ex
-           (log/error "failure updating project.clj for dependency change" ex)
-           :failure))))
-    pr-opts) project))
+  [project library-name library-version]
+  (go
+   (try
+     (let [f (io/file (. ^js project -baseDir) "project.clj")]
+       (io/spit f (atomist.lein/edit-library (io/slurp f) library-name library-version)))
+     :success
+     (catch :default ex
+       (log/error "failure updating project.clj for dependency change" ex)
+       :failure))))
 
