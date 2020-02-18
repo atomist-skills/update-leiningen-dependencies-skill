@@ -68,6 +68,8 @@ parameters:
       description: "Manually Configured set of Lein dependencies"
       displayName: "Leiningen Library name"
       name: "dependencies"
+      lineStyle: "multiple"
+      placeHolder: "[[lib-symbol \"version\"]]"
       required: false
   - repoFilter:
       description: "The set of Repositories for this String Replace rule."
