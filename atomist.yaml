@@ -24,7 +24,8 @@ skill:
     Track all versions of leiningens dependencies and allow users to set
     cross repo targets for dependency versions.
   category:
-  - productivity
+  - DEPENDENCIES
+  - DEV_EX
   license: Apache-2.0
   homepage: https://github.com/atomist-skills/update-leiningen-dependencies
   repository: https://github.com/atomist-skills/update-leiningen-dependencies
@@ -68,6 +69,8 @@ parameters:
       description: "Manually Configured set of Lein dependencies"
       displayName: "Leiningen Library name"
       name: "dependencies"
+      lineStyle: "multiple"
+      placeHolder: "[[lib-symbol \"version\"]]"
       required: false
   - repoFilter:
       description: "The set of Repositories for this String Replace rule."
