@@ -49,69 +49,6 @@
        {:error ex
         :message "unable to compute leiningen fingerprints"}))))
 
-(defn check-for-targets-to-apply [handler]
-  (fn [request]
-    (if (and
-         (empty? (-> request :data :CommitFingerprintImpact :offTarget))
-         (empty? (:configurations request)))
-      (api/finish request)
-      (handler request))))
-
-(defn- handle-push-event [request]
-  ((-> (api/finished :message "handling Push" :success "successfully handled Push event")
-       (api/send-fingerprints)
-       (api/run-sdm-project-callback compute-fingerprints)
-       (api/extract-github-token)
-       (api/create-ref-from-push-event)) request))
-
-(defn- handle-impact-event [request]
-  ((-> (api/finished :message "handling CommitFingerprintImpact")
-       (api/extract-github-token)
-       (api/create-ref-from-repo
-        (-> request :data :CommitFingerprintImpact :repo)
-        (-> request :data :CommitFingerprintImpact :branch))
-       (check-for-targets-to-apply)) request))
-
-(defn log-attempt [handler]
-  (fn [request]
-    (log/infof "compute leiningen fingerprints in %s" (:ref request))
-    (handler request)))
-
-(defn set-up-target-configuration [handler]
-  (fn [request]
-    (log/infof "set up target dependency to converge on [%s]" (:dependency request))
-    (handler (assoc request
-               :configurations [{:parameters [{:name "policy"
-                                               :value "manualConfiguration"}
-                                              {:name "dependencies"
-                                               :value (gstring/format "[%s]" (:dependency request))}]}]))))
-
-(defn fp-command-handler [request]
-  ((-> (api/finished :message "handling extraction CommandHandler")
-       (api/show-results-in-slack :result-type "fingerprints")
-       (api/run-sdm-project-callback just-fingerprints)
-       (log-attempt)
-       (api/create-ref-from-first-linked-repo)
-       (api/extract-linked-repos)
-       (api/extract-github-user-token)
-       (api/set-message-id)) (assoc request :branch "master")))
-
-(defn update-command-handler [request]
-  ((-> (api/finished :message "handling application CommandHandler")
-       (api/show-results-in-slack :result-type "fingerprints")
-       (api/run-sdm-project-callback compute-fingerprints)
-       (set-up-target-configuration)
-       (log-attempt)
-       (api/create-ref-from-first-linked-repo)
-       (api/extract-linked-repos)
-       (api/extract-github-user-token)
-       (api/check-required-parameters {:name "dependency"
-                                       :required true
-                                       :pattern ".*"
-                                       :validInput "[lein-lib version]"})
-       (api/extract-cli-parameters [[nil "--dependency dependency" "[lib version]"]])
-       (api/set-message-id)) (assoc request :branch "master")))
-
 (defn ^:export handler
   "handler
     must return a Promise - we don't do anything with the value
@@ -119,21 +56,16 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
-  (sdm/enable-sdm-debug-logging)
-  (api/make-request
-   data
-   sendreponse
-   (fn [request]
-     (cond
-       ;; handle Push events
-       (contains? (:data request) :Push)
-       (handle-push-event request)
-       ;; handle Commit Fingeprint Impact events
-       (contains? (:data request) :CommitFingerprintImpact)
-       (handle-impact-event request)
-
-       (= "ShowLeiningenDependencies" (:command request))
-       (fp-command-handler request)
-
-       (= "UpdateLeiningenDependency" (:command request))
-       (update-command-handler request)))))
+  (deps/deps-handler data sendreponse
+                     ["ShowLeiningenDependencies"
+                      just-fingerprints]
+                     ["UpdateLeiningenDependency"
+                      compute-fingerprints
+                      (api/compose-middleware
+                       [deps/set-up-target-configuration]
+                       [api/check-required-parameters {:name "dependency"
+                                                       :required true
+                                                       :pattern ".*"
+                                                       :validInput "[lib-symbol version]"}]
+                       [api/extract-cli-parameters [[nil "--dependency dependency" "[lib version]"]]])]
+                     deps/mw-validate-policy))

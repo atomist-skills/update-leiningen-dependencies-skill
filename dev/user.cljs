@@ -153,12 +153,12 @@
                                                                       :credential {:secret github-token}}}}
                                            :after {:message ""}}]}
                             :secrets [{:uri "atomist://api-key" :value token}]
-                            :configurations [{:name "metosin/compojure-api"
-                                              :parameters [{:name "name" :value "metosin/compojure-api"}
-                                                           {:name "version" :value "1.1.12"}]}
-                                             {:name "crap1"
-                                              :parameters [{:name "name" :value "crap1"}
-                                                           {:name "version" :value "1.1"}]}]
+                            :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}
+                                                           {:name "dependencies" :value "[[org.clojure/clojure \"1.10.2\"]]"}]}
+                                             {:parameters [{:name "policy" :value "latestSemVerAvailable"}
+                                                           {:name "dependencies" :value "[\"mount\"]"}]}
+                                             {:parameters [{:name "policy" :value "latestSemVerUsed"}
+                                                           {:name "dependencies" :value "[\"com.atomist/common\"]"}]}]
                             :extensions {:team_id "AK748NQC5"}}
                        (fn [& args] (log/info "sendreponse " args)))
 
