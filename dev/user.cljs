@@ -9,10 +9,10 @@
             [cljs-node-io.core :refer [slurp spit]]
             [atomist.editors :as editors]
             [atomist.cljs-log :as log]
-            ["@atomist/sdm" :as atomistsdm]
             ["@atomist/automation-client" :as ac]
             ["@atomist/automation-client/lib/operations/support/editorUtils" :as editor-utils]
-            [atomist.json :as json])
+            [atomist.json :as json]
+            [atomist.promise :as promise])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (comment
@@ -98,8 +98,6 @@
   (log/info (js->clj obj))
   (log/info "response ---------------"))
 
-(println token)
-
 (sdm/enable-sdm-debug-logging)
 
 (comment
@@ -173,6 +171,25 @@
      (cljs.pprint/pprint request))
    atomist.main/compute-fingerprints)
   {:ref {:owner "atomisthqa" :repo "clj1" :branch "master"}
-   :token github-token}))
+   :token github-token})
 
+ ;; get a Project by cloning
+ (go (def p (<! (sdm/do-with-shallow-cloned-project
+                 (fn [p]
+                   (go p))
+                 github-token
+                 {:repo "elephants"
+                  :owner "atomisthqa"
+                  :branch "master"}))))
 
+ ;; find a linked Slack Team
+ (go (println (<! (api/linked-slack-team->channel {:secrets [{:uri "atomist://api-key" :value token}]
+                                                   :team {:id "AK748NQC5"}}))))
+
+ ;; test middleware for decorating a schedule event with a slack source from the graph
+ ((api/add-slack-source-to-event (fn [request]
+                                   (println "request " request)) :channel "thingy")
+  {:secrets [{:uri "atomist://api-key" :value token}]
+   :team {:id "AK748NQC5"}})
+
+ )
