@@ -15,6 +15,12 @@
             [atomist.promise :as promise])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
+(enable-console-print!)
+
+(def token (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_STAGING))
+#_(def token (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_PROD))
+(def github-token (.. js/process -env -GITHUB_TOKEN))
+
 (comment
 
  ((api/run-sdm-project-callback
