@@ -57,8 +57,8 @@
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
   (deps/deps-handler data sendreponse
-                     ["ShowLeiningenDependencies"
-                      just-fingerprints]
+                     ["ShowLeiningenDependencies" just-fingerprints]
+                     ["SyncLeiningenDependency"]
                      ["UpdateLeiningenDependency"
                       compute-fingerprints
                       (api/compose-middleware

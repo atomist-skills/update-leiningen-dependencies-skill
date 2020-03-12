@@ -48,6 +48,9 @@ commands:
 - name: UpdateLeiningenDependency
   description: "update one dependency"
   pattern: "^lein update.*$"
+- name: SyncLeiningenDependency
+  description: "sync dependencies for one Repository"
+  pattern: "^lein sync.*$"
 
 parameters:
   - singleChoice:
