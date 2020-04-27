@@ -1,7 +1,6 @@
 (ns atomist.lein
   (:require [rewrite-clj.zip :as z]
-            [cljs-node-io.core :as io :refer [slurp spit]]
-            [cljs-node-io.file :as file]
+            [cljs-node-io.core :refer [slurp spit]]
             [goog.crypt :as crypt]
             [cljs.pprint :refer [pprint]]
             [cljs.reader :refer [read-string]]
@@ -69,29 +68,3 @@
       (read-string)
       (nth 1)
       (str)))
-
-(defn deps
-  " sha is checksum of jsonified 2-tuple array of [string library, string version] in lein format
-    data is the jsonified 2-tuple array
-    name is the string library dep but with the / replaced by ::"
-  [f]
-  (->> (for [dep (project-dependencies f) :let [data (into [] (take 2 dep))]]
-         {:type "clojure-project-deps"
-          :name (gstring/replaceAll (nth dep 0) "/" "::")
-          :displayName (nth dep 0)
-          :displayValue (nth data 1)
-          :displayType "Lein dependencies"
-          :data data
-          :sha (sha/sha-256 (json/->str data))
-          :abbreviation "lein-deps"
-          :version "0.0.1"})
-       (into [])))
-
-(defn coordinates [f]
-  [{:name "clojure-project-coordinates"
-    :data {:name (get-name f)
-           :version (get-version f)}
-    :abbreviation "coords"
-    :version "0.0.1"}])
-
-

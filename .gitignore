@@ -6,3 +6,4 @@ node_modules/
 .shadow-cljs/
 classes/
 index.js
+.clj-kondo/

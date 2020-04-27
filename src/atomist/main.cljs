@@ -1,53 +1,48 @@
 (ns atomist.main
   (:require [cljs.pprint :refer [pprint]]
-            [cljs.core.async :refer [<! >! timeout chan] :as async]
-            [clojure.string :as s]
-            [goog.crypt.base64 :as b64]
-            [goog.string :as gstring]
+            [cljs.core.async :refer [<! >! timeout chan]]
             [goog.string.format]
             [atomist.cljs-log :as log]
-            [atomist.editors :as editors]
-            [atomist.sdmprojectmodel :as sdm]
-            [atomist.json :as json]
             [atomist.api :as api]
-            [atomist.promise :as promise]
             [atomist.leiningen :as leiningen]
-            [atomist.sha :as sha]
-            [cljs-node-io.core :as io]
-            ["@atomist/automation-client" :as ac]
             [atomist.deps :as deps])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn just-fingerprints
-  [request project]
+  [_ project]
   (go
-   (try
-     (let [fingerprints (leiningen/extract project)]
+    (try
+      (let [fingerprints (leiningen/extract project)]
        ;; return the fingerprints in a form that they can be added to the graph
-       fingerprints)
-     (catch :default ex
-       (log/error "unable to compute leiningen fingerprints")
-       (log/error ex)
-       {:error ex
-        :message "unable to compute leiningen fingerprints"}))))
+        fingerprints)
+      (catch :default ex
+        (log/error "unable to compute leiningen fingerprints")
+        (log/error ex)
+        {:error ex
+         :message "unable to compute leiningen fingerprints"}))))
+
+(def apply-policy (partial deps/apply-policy-targets {:type "maven-direct-dep"
+                                                      :apply-library-editor leiningen/apply-library-editor
+                                                      :->library-version leiningen/data->library-version
+                                                      :->data leiningen/library-version->data
+                                                      :->sha leiningen/data->sha
+                                                      :->name leiningen/library-name->name}))
 
 (defn compute-fingerprints
   [request project]
   (go
-   (try
-     (let [fingerprints (leiningen/extract project)]
-       ;; first create PRs for any off target deps
-       (<! (deps/apply-policy-targets
-            (assoc request :project project :fingerprints fingerprints)
-            "clojure-project-deps"
-            leiningen/apply-library-editor))
+    (try
+      (let [fingerprints (leiningen/extract project)]
+       ;; first create PRs for any off-target deps
+        (<! (apply-policy
+             (assoc request :project project :fingerprints fingerprints)))
        ;; return the fingerprints in a form that they can be added to the graph
-       fingerprints)
-     (catch :default ex
-       (log/error "unable to compute leiningen fingerprints")
-       (log/error ex)
-       {:error ex
-        :message "unable to compute leiningen fingerprints"}))))
+        fingerprints)
+      (catch :default ex
+        (log/error "unable to compute leiningen fingerprints")
+        (log/error ex)
+        {:error ex
+         :message "unable to compute leiningen fingerprints"}))))
 
 (defn ^:export handler
   "handler
