@@ -1,45 +1,26 @@
-#
-#  Copyright © 2019 Atomist, Inc.
-#
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-#
-
 skill:
-  name: "atomist/update-leiningen-dependencies"
-  title: Update Leiningen Dependencies
-  author: Atomist
   description: Automatically update dependencies based on your own policy
+  category:
+    - DEPENDENCIES
+    - DEV_EX
+  package:
+    use: atomist/package-cljs-skill
+  repository: 'https://github.com/atomist-skills/update-leiningen-dependencies-skill'
+  license: Apache-2.0
+  homepage: 'https://github.com/atomist-skills/update-leiningen-dependencies-skill'
+  name: atomist/update-leiningen-dependencies
   long_description: |
     Track all versions of leiningens dependencies and allow users to set
     cross repo targets for dependency versions.
-  category:
-  - DEPENDENCIES
-  - DEV_EX
-  license: Apache-2.0
-  homepage: https://github.com/atomist-skills/update-leiningen-dependencies-skill
-  repository: https://github.com/atomist-skills/update-leiningen-dependencies-skill
-  icon: https://leiningen.org/img/leiningen.jpg
+  icon: 'https://leiningen.org/img/leiningen.jpg'
+  title: Update Leiningen Dependencies
+  author: Atomist
   dispatch: single
-
-  package:
-    use: 'atomist/package-cljs-skill'
-
   runtime:
     name: nodejs10
     entry_point: eventhandler
     memory: 256
     timeout: 60
-
 resourceProviders:
   - name: github
     description: GitHub
@@ -51,43 +32,45 @@ resourceProviders:
     typeName: SlackResourceProvider
     minRequired: 0
     maxAllowed: 1
-
 commands:
-- name: ShowLeiningenDependencies
-  description: "summary of the leiningen dependencies"
-  pattern: "^lein fingerprints.*$"
-- name: UpdateLeiningenDependency
-  description: "update one dependency"
-  pattern: "^lein update.*$"
-- name: SyncLeiningenDependency
-  description: "sync dependencies for one Repository"
-  pattern: "^lein sync.*$"
-
+  - name: ShowLeiningenDependencies
+    description: summary of the leiningen dependencies
+    pattern: ^lein fingerprints.*$
+  - name: UpdateLeiningenDependency
+    description: update one dependency
+    pattern: ^lein update.*$
+  - name: SyncLeiningenDependency
+    description: sync dependencies for one Repository
+    pattern: ^lein sync.*$
 parameters:
   - singleChoice:
-      description: "Choose a policy for how target dependencies should be discovered by this skill"
-      displayName: "Target Policy"
-      name: "policy"
+      description: >-
+        Choose a policy for how target dependencies should be discovered by this
+        skill
+      displayName: Target Policy
+      name: policy
       required: true
       options:
-        - description: "Use the latest semver version found within current set of Projects"
-          text: "latest semver used"
-          value: "latestSemVerUsed"
-        - description: "Use the latest semver available in clojars"
-          text: "latest semver available"
-          value: "latestSemVerAvailable"
-        - description: "Use the set of leiningen dependencies configured manually in this Skill"
-          text: "manual"
-          value: "manualConfiguration"
+        - description: Use the latest semver version found within current set of Projects
+          text: latest semver used
+          value: latestSemVerUsed
+        - description: Use the latest semver available in clojars
+          text: latest semver available
+          value: latestSemVerAvailable
+        - description: >-
+            Use the set of leiningen dependencies configured manually in this
+            Skill
+          text: manual
+          value: manualConfiguration
   - string:
-      description: "Manually Configured set of Lein dependencies"
-      displayName: "Leiningen Library name"
-      name: "dependencies"
-      lineStyle: "multiple"
-      placeHolder: "[[lib-symbol \"version\"]]"
+      description: Manually Configured set of Lein dependencies
+      displayName: Leiningen Library name
+      name: dependencies
+      lineStyle: multiple
+      placeHolder: '[[lib-symbol "version"]]'
       required: false
   - repoFilter:
-      description: "The set of Repositories for this String Replace rule."
-      displayName: "Repository Scope"
-      name: "scope"
+      description: The set of Repositories for this String Replace rule.
+      displayName: Repository Scope
+      name: scope
       required: false
