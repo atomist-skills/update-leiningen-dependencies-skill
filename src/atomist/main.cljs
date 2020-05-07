@@ -9,10 +9,10 @@
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn just-fingerprints
-  [_ project]
+  [request]
   (go
     (try
-      (let [fingerprints (leiningen/extract project)]
+      (let [fingerprints (leiningen/extract (:project request))]
        ;; return the fingerprints in a form that they can be added to the graph
         fingerprints)
       (catch :default ex
@@ -29,13 +29,12 @@
                                                       :->name leiningen/library-name->name}))
 
 (defn compute-fingerprints
-  [request project]
+  [request]
   (go
     (try
-      (let [fingerprints (leiningen/extract project)]
+      (let [fingerprints (leiningen/extract (:project request))]
        ;; first create PRs for any off-target deps
-        (<! (apply-policy
-             (assoc request :project project :fingerprints fingerprints)))
+        (<! (apply-policy (assoc request :fingerprints fingerprints)))
        ;; return the fingerprints in a form that they can be added to the graph
         fingerprints)
       (catch :default ex
