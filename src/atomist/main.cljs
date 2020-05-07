@@ -51,11 +51,11 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
-  (deps/deps-handler data sendreponse
-                     ["ShowLeiningenDependencies" just-fingerprints]
+  (deps/deps-handler data
+                     sendreponse
+                     ["ShowLeiningenDependencies"]
                      ["SyncLeiningenDependency"]
                      ["UpdateLeiningenDependency"
-                      compute-fingerprints
                       (api/compose-middleware
                        [deps/set-up-target-configuration]
                        [api/check-required-parameters {:name "dependency"
@@ -63,4 +63,6 @@
                                                        :pattern ".*"
                                                        :validInput "[lib-symbol version]"}]
                        [api/extract-cli-parameters [[nil "--dependency dependency" "[lib version]"]]])]
+                     just-fingerprints
+                     compute-fingerprints
                      deps/mw-validate-policy))
