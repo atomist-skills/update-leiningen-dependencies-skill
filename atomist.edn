@@ -20,6 +20,8 @@
    :entry_point "eventhandler",
    :memory 256,
    :timeout 60},
+  :homepageUrl
+  "https://github.com/atomist-skills/update-leiningen-dependencies-skill",
   :longDescription "This section supports markdown"},
  :resourceProviders
  [{:name "github",
