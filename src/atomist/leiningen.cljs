@@ -1,9 +1,7 @@
 (ns atomist.leiningen
   (:require [atomist.lein]
             [cljs-node-io.core :as io]
-            [cljs-node-io.fs :as fs]
             [atomist.cljs-log :as log]
-            [atomist.sdmprojectmodel :as sdm]
             [cljs.core.async :refer [<! timeout chan]]
             [clojure.string :as s]
             [atomist.sha :as sha]
