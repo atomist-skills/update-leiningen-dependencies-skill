@@ -55,7 +55,7 @@ repositories that should be scanned.
 
 ## How to use Update Clojure Tools Dependencies
 
-1.  **Configure the skill, add a target policy and select repositories to scan for `deps.edn` files** 
+1.  **Configure the skill, add a target policy and select repositories to scan for `project.clj` files** 
 
     The skill will run on any new pushes to selected repositories.
     and will raise pull requests for npm libraries that are not on the target.
