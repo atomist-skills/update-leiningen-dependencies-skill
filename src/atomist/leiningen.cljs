@@ -48,14 +48,15 @@
     data is the jsonified 2-tuple array
     name is the string library dep but with the / replaced by ::"
   [f]
+  (cljs.pprint/pprint (lein/project-dependencies f))
   (->> (for [dep (lein/project-dependencies f) :let [data (into [] (take 2 dep))]]
          {:type "maven-direct-dep"
           :name (library-name->name (nth dep 0))
           :displayName (nth dep 0)
           :displayValue (nth data 1)
           :displayType "MVN Coordinate"
-          :data (->coordinate deps)
-          :sha (data->sha (->coordinate deps))
+          :data (->coordinate dep)
+          :sha (data->sha (->coordinate dep))
           :abbreviation "m2"
           :version "0.0.1"})
        (into [])))
@@ -67,10 +68,11 @@
 
     returns array of leiningen fingerprints or empty [] if project.clj is not present"
   [project]
-  (let [f (io/file (:path project) "project.clj")]
-    (if (.exists f)
-      (deps f)
-      [])))
+  (go
+    (let [f (io/file (:path project) "project.clj")]
+      (if (.exists f)
+        (deps f)
+        []))))
 
 (defn- apply-library-editor
   "apply a library edit inside of a PR
