@@ -3,6 +3,6 @@
 
 (def module-name "update-leiningen-dependencies-skill")
 (def path ".")
-(def version "0.1.15")
-(def tag "0.1.15")
-(def generated-at "2020-05-25T04:01:00Z")
+(def version "0.1.16")
+(def tag "0.1.16")
+(def generated-at "2020-05-25T04:44:58Z")
