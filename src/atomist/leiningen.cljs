@@ -67,7 +67,7 @@
 
     returns array of leiningen fingerprints or empty [] if project.clj is not present"
   [project]
-  (let [f (io/file (. ^js project -baseDir) "project.clj")]
+  (let [f (io/file (:path project) "project.clj")]
     (if (.exists f)
       (deps f)
       [])))
@@ -86,7 +86,7 @@
   [project target-fingerprint]
   (go
     (try
-      (let [f (io/file (. ^js project -baseDir) "project.clj")
+      (let [f (io/file (:path project) "project.clj")
             [library-name library-version] (data->library-version (:data target-fingerprint))]
         (io/spit f (atomist.lein/edit-library (io/slurp f) library-name library-version)))
       :success
