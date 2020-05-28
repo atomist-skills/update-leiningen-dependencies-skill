@@ -4,7 +4,7 @@ Track `project.clj` dependencies across different projects.
 
 <!---atomist-skill-readme:start--->
 
-Keep track of all versions of npm dependencies found within `project.clj` files across your Repositories.
+Keep track of all versions of  dependencies found within `project.clj` files across your Repositories.
 
 # What it's useful for
 
@@ -53,7 +53,7 @@ repositories that should be scanned.
     To restrict the organizations or specific repositories on which the skill will run, you can explicitly choose 
     organization(s) and repositories.
 
-## How to use Update Clojure Tools Dependencies
+## How to use Update Leiningen Dependencies
 
 1.  **Configure the skill, add a target policy and select repositories to scan for `project.clj` files** 
 
