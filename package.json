@@ -5,23 +5,27 @@
   "description": "use this to pull in a skill's npm dependencies",
   "scripts": {
     "build:watch": "shadow-cljs watch dev",
-    "build": "shadow-cljs release release"
+    "build": "shadow-cljs release release",
+    "bundle": "clj -A:bundle",
+    "skill": "npm run build && npm run bundle"
   },
   "dependencies": {
-    "@atomist/skill-logging": "0.1.0-master.20200316180914",
-    "@google-cloud/pubsub": "^1.0.0",
-    "@google-cloud/storage": "^4.1.3",
-    "fast-glob": "^3.2.2",
-    "iconv-lite": "^0.4.19",
     "js-yaml": "^3.13.1",
-    "request": "^2.88.0",
     "semver": "^7.3.2",
+    "@slimslenderslacks/api-cljs": "0.1.4",
+    "@atomist/skill-logging": "0.1.0-master.20200316180914",
     "shell-quote": "^1.7.2",
-    "tmp": "^0.2.1"
+    "@google-cloud/pubsub": "^1.0.0",
+    "request": "^2.88.0",
+    "fast-glob": "^3.2.2",
+    "tmp": "^0.2.1",
+    "@google-cloud/storage": "^4.1.3",
+    "iconv-lite": "^0.4.19"
   },
   "devDependencies": {
     "shadow-cljs": "^2.8.69",
     "source-map-support": "0.5.9",
     "ws": "^7.3.0"
-  }
+  },
+  "main": "node_modules/@slimslenderslacks/api-cljs/app.js"
 }
