@@ -33,8 +33,13 @@
     "src"
     "--namespace"
     "atomist.skill-meta"
-    "--formats" 
-    "cljs" 
-    "--without-sign" 
-    "--prefix" 
-    ":none"]}}}
+    "--formats"
+    "cljs"
+    "--without-sign"
+    "--prefix"
+    ":none"]},
+  :bundle
+  {:extra-deps
+   {com.atomist/package-cljs-skill
+    {:local/root "/Users/slim/skills/package-cljs-skill"}},
+   :main-opts ["-m" "atomist.functions.bundle"]}}}
