@@ -6,7 +6,7 @@
   "scripts": {
     "build:watch": "shadow-cljs watch dev",
     "build": "shadow-cljs release release",
-    "bundle": "clj -A:bundle",
+    "bundle": "bundle",
     "skill": "npm run build && npm run bundle"
   },
   "dependencies": {
@@ -27,5 +27,5 @@
     "source-map-support": "0.5.9",
     "ws": "^7.3.0"
   },
-  "main": "node_modules/@slimslenderslacks/api-cljs/app.js"
+  "main": "node_modules/@atomist/api-cljs/app.js"
 }
