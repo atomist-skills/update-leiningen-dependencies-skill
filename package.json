@@ -10,18 +10,7 @@
     "skill": "npm run build && npm run bundle"
   },
   "dependencies": {
-    "@atomist/api-cljs": "^0.1.21",
-    "@atomist/skill-logging": "0.1.0-master.20200316180914",
-    "@google-cloud/pubsub": "^1.0.0",
-    "@google-cloud/storage": "^4.1.3",
-    "@slimslenderslacks/api-cljs": "0.1.4",
-    "fast-glob": "^3.2.2",
-    "iconv-lite": "^0.4.19",
-    "js-yaml": "^3.13.1",
-    "request": "^2.88.0",
-    "semver": "^7.3.2",
-    "shell-quote": "^1.7.2",
-    "tmp": "^0.2.1"
+    "@atomist/api-cljs": "^0.1.21"
   },
   "devDependencies": {
     "@atomist/skill-bundler": "^0.1.2",
