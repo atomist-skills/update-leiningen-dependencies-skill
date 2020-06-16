@@ -4,10 +4,7 @@
             [goog.crypt :as crypt]
             [cljs.pprint :refer [pprint]]
             [cljs.reader :refer [read-string]]
-            [goog.string :as gstring]
-            [goog.string.format]
-            [atomist.json :as json]
-            [atomist.sha :as sha]))
+            [goog.string.format]))
 
 (defn edit-library [s library-name library-version]
   (-> s

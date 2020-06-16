@@ -8,6 +8,7 @@
 
 (enable-console-print!)
 (set-env :prod-github-auth)
+(set-env :staging)
 
 (comment
 
