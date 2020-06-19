@@ -6,5 +6,6 @@ node_modules/
 .shadow-cljs/
 classes/
 index.js
+tests.js
 .clj-kondo/
 **/.DS_Store

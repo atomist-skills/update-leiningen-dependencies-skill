@@ -8,4 +8,9 @@
   :dev
   {:target :node-library,
    :exports {:handler atomist.main/handler}, 
-   :output-to "index.js"}}}
+   :output-to "index.js"}
+  :test
+  {:target :node-test
+   :output-to "tests.js"
+   :ns-regexp "-t$"
+   :autorun true}}}
