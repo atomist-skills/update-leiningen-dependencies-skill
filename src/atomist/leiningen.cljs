@@ -1,8 +1,6 @@
 (ns atomist.leiningen
-  (:require [atomist.lein]
-            [cljs-node-io.core :as io]
+  (:require [cljs-node-io.core :as io]
             [atomist.cljs-log :as log]
-            [cljs.core.async :refer [<! timeout chan]]
             [clojure.string :as s]
             [atomist.sha :as sha]
             [atomist.json :as json]
@@ -13,8 +11,8 @@
 
 (defn library-name->name [s]
   (-> s
-      (s/replace-all #"@" "")
-      (s/replace-all #"/" "::")))
+      (s/replace #"@" "")
+      (s/replace #"/" "::")))
 
 (defn data->sha [data]
   (sha/sha-256 (json/->str data)))
@@ -48,7 +46,6 @@
     data is the jsonified 2-tuple array
     name is the string library dep but with the / replaced by ::"
   [f]
-  (cljs.pprint/pprint (lein/project-dependencies f))
   (->> (for [dep (lein/project-dependencies f) :let [data (into [] (take 2 dep))]]
          {:type "maven-direct-dep"
           :name (library-name->name (nth dep 0))
@@ -74,7 +71,7 @@
         (deps f)
         []))))
 
-(defn- apply-library-editor
+(defn apply-library-editor
   "apply a library edit inside of a PR
 
     params

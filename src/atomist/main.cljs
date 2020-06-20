@@ -1,11 +1,8 @@
 (ns atomist.main
-  (:require [cljs.pprint :refer [pprint]]
-            [cljs.core.async :refer [<! >! timeout chan]]
-            [goog.string.format]
+  (:require [goog.string.format]
             [atomist.api :as api]
             [atomist.leiningen :as leiningen]
-            [atomist.deps :as deps])
-  (:require-macros [cljs.core.async.macros :refer [go]]))
+            [atomist.deps :as deps]))
 
 (defn ^:export handler
   "handler
