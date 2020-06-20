@@ -7,8 +7,8 @@
     (is (= "(defproject :dependencies [[org/hello \"1.1\"]])"
            (lein/edit-library lein-project "org/hello" "1.1")))
     (is (thrown?
-           :default
-           (lein/edit-library lein-project "org/hell" "1.1")))))
+         :default
+         (lein/edit-library lein-project "org/hell" "1.1")))))
 
 (deftest lein-deps-t
   (let [lein-project "(defproject :dependencies [[org/hello \"1.0\"] [a/b \"11.11.11\"]])"
