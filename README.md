@@ -87,8 +87,8 @@ To create feature requests or bug reports, create an [issue in the repository fo
 
 ## Building and Testing
 
-We should be able to invoke everything from `npm`.  Our shadow-cljs configuration uses deps.edn of course so there's 
-a lot of JVM processing happening as well.
+Although we are invoking everything from `npm`, this uses shadow-cljs (deps.edn to manage the cljs dependencies).
+Run unit tests using:
 
 ```
 $ npm ci
