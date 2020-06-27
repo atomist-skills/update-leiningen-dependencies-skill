@@ -1,5 +1,5 @@
 {:description
- "Automatically update dependencies based on your own policy",
+ "Track versions and keep your Leiningen dependencies up to date",
  :category ["DEPENDENCIES" "DEVEX"],
  :license "Apache-2.0",
  :resourceProviders
