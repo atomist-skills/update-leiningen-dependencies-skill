@@ -27,9 +27,9 @@
   {:name "SyncLeiningenDependency",
    :description "sync dependencies for one Repository",
    :pattern "^lein sync.*$"}],
- :iconUrl
- "https://leiningen.org/img/leiningen.jpg",
- :homepageUrl "https://github.com/atomist-skills/update-leiningen-dependencies-skill",
+ :iconUrl "https://leiningen.org/img/leiningen.jpg",
+ :homepageUrl
+ "https://github.com/atomist-skills/update-leiningen-dependencies-skill",
  :parameters
  [{:singleChoice
    {:description
@@ -64,8 +64,9 @@
     :required false}}],
  :namespace "atomist",
  :artifacts
- {:gcf [{:name "package-cljs-skill",
-         :entryPoint "eventhandler",
-         :memory 512,
-         :runtime "nodejs10",
-         :timeout 60}]}}
+ {:gcf
+  [{:name "package-cljs-skill",
+    :entryPoint "eventhandler",
+    :memory 512, 
+    :runtime "nodejs10", 
+    :timeout 60}]}}
