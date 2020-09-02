@@ -1,6 +1,5 @@
 {:description
  "Track versions and keep your Leiningen dependencies up to date",
- :categories ["DEPENDENCIES" "SECURITY"],
  :license "Apache-2.0",
  :resourceProviders
  [{:name "github",
@@ -27,6 +26,7 @@
   {:name "SyncLeiningenDependency",
    :description "sync dependencies for one Repository",
    :pattern "^lein sync.*$"}],
+ :categories ["DEPENDENCIES" "SECURITY"],
  :iconUrl "https://leiningen.org/img/leiningen.jpg",
  :homepageUrl
  "https://github.com/atomist-skills/update-leiningen-dependencies-skill",
