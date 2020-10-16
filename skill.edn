@@ -40,7 +40,7 @@
   {:name "SyncLeiningenDependency",
    :description "sync dependencies for one Repository",
    :pattern "^lein sync.*$"}],
- :categories ["DEPENDENCIES" "SECURITY"],
+ :categories ["CODE_MAINTENANCE" "SECURITY"],
  :iconUrl "https://leiningen.org/img/leiningen.jpg",
  :homepageUrl
  "https://github.com/atomist-skills/update-leiningen-dependencies-skill",
