@@ -51,4 +51,5 @@
     "cljs" 
     "--without-sign" 
     "--prefix" 
-    ":none"]}}}
+    ":none"]}
+  :build {}}}
