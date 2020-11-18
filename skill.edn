@@ -29,7 +29,6 @@
  :displayName "Update Leiningen Dependencies",
  :name "update-leiningen-dependencies",
  :author "Atomist",
- :dispatch "single",
  :commands
  [{:name "ShowLeiningenDependencies",
    :description "summary of the leiningen dependencies",
