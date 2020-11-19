@@ -20,11 +20,6 @@
    :description "GitHub",
    :typeName "GitHubAppResourceProvider",
    :minRequired 1,
-   :maxAllowed 1}
-  {:name "slack",
-   :description "Slack",
-   :typeName "SlackResourceProvider",
-   :minRequired 0,
    :maxAllowed 1}],
  :displayName "Update Leiningen Dependencies",
  :name "update-leiningen-dependencies",
