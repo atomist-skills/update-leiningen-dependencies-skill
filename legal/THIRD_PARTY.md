@@ -151,7 +151,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `@types/duplexify`        | `3.6.0`    |                     | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
 | `@types/long`             | `4.0.1`    |                     | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
 | `@types/node`             | `12.19.8`  |                     | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
-| `@types/node`             | `13.13.34` |                     | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
+| `@types/node`             | `13.13.35` |                     | [https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)                                       |
 | `abort-controller`        | `3.0.0`    | Toru Nagashima      | [https://github.com/mysticatea/abort-controller](https://github.com/mysticatea/abort-controller)                                               |
 | `agent-base`              | `6.0.2`    | Nathan Rajlich      | [https://github.com/TooTallNate/node-agent-base](https://github.com/TooTallNate/node-agent-base)                                               |
 | `ansi-regex`              | `5.0.0`    | Sindre Sorhus       | [https://github.com/chalk/ansi-regex](https://github.com/chalk/ansi-regex)                                                                     |
@@ -260,7 +260,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `unique-string`           | `2.0.0`    | Sindre Sorhus       | [https://github.com/sindresorhus/unique-string](https://github.com/sindresorhus/unique-string)                                                 |
 | `util-deprecate`          | `1.0.2`    | Nathan Rajlich      | [https://github.com/TooTallNate/util-deprecate](https://github.com/TooTallNate/util-deprecate)                                                 |
 | `uuid`                    | `3.4.0`    |                     | [https://github.com/uuidjs/uuid](https://github.com/uuidjs/uuid)                                                                               |
-| `uuid`                    | `8.3.1`    |                     | [https://github.com/uuidjs/uuid](https://github.com/uuidjs/uuid)                                                                               |
+| `uuid`                    | `8.3.2`    |                     | [https://github.com/uuidjs/uuid](https://github.com/uuidjs/uuid)                                                                               |
 | `wrap-ansi`               | `6.2.0`    | Sindre Sorhus       | [https://github.com/chalk/wrap-ansi](https://github.com/chalk/wrap-ansi)                                                                       |
 | `xdg-basedir`             | `4.0.0`    | Sindre Sorhus       | [https://github.com/sindresorhus/xdg-basedir](https://github.com/sindresorhus/xdg-basedir)                                                     |
 | `yargs`                   | `15.4.1`   |                     | [https://github.com/yargs/yargs](https://github.com/yargs/yargs)                                                                               |
@@ -270,7 +270,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 
 | Name                | Version   | Publisher       | Repository |
 | ------------------- | --------- | --------------- | ---------- |
-| `@atomist/api-cljs` | `0.4.144` | jim@atomist.com |            |
+| `@atomist/api-cljs` | `0.4.146` | jim@atomist.com |            |
 
 ## Contact
 
