@@ -12,7 +12,7 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-{:paths ["src"],
+{:paths ["src" "test"],
  :deps
  {org.clojure/clojurescript {:mvn/version "1.10.520"},
   com.atomist/api-cljs {:mvn/version "0.4.119"},
