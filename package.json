@@ -9,7 +9,7 @@
     "ws": "^7.4.5"
   },
   "dependencies": {
-    "@atomist/api-cljs": "^0.5.68"
+    "@atomist/api-cljs": "^0.5.69"
   },
   "author": "jim@atomist.com",
   "name": "update-leiningen-dependencies",
